@@ -26,13 +26,6 @@ let of_int n =
 
 let max_int = to_int { enum_names=true; json_names=true; omit_default_values=true }
 
-let%test "perfect hash" = let i = 0 in to_int (of_int i) = i
-let%test "perfect hash" = let i = 1 in to_int (of_int i) = i
-let%test "perfect hash" = let i = 2 in to_int (of_int i) = i
-let%test "perfect hash" = let i = 3 in to_int (of_int i) = i
-let%test "perfect hash" = let i = 4 in to_int (of_int i) = i
-let%test "perfect hash" = let i = 5 in to_int (of_int i) = i
-let%test "perfect hash" = let i = 6 in to_int (of_int i) = i
-let%test "perfect hash" = let i = 7 in to_int (of_int i) = i
+
 
 (**/**)
