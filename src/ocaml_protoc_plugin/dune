@@ -6,4 +6,3 @@
  (libraries base64 ptime)
  (instrumentation (backend bisect_ppx))
 )
-y
