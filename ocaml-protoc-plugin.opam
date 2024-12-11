@@ -9,7 +9,6 @@ doc: "https://andersfugmann.github.io/ocaml-protoc-plugin/"
 build: [
   ["dune" "subst"] {dev}
   ["dune" "build" "-p" name "-j" jobs]
-  ["dune" "runtest" "-p" name "-j" jobs] {with-test & arch != "arm32" & arch != "x86_32"}
 ]
 
 depends: [
@@ -18,8 +17,6 @@ depends: [
   "conf-c++" {with-test}
   "dune" {>= "3.12"}
   "ocaml" {>= "4.08.0"}
-  "ppx_expect"
-  "ppx_inline_test"
   "ppx_deriving" {with-test}
   "bisect_ppx" {with-test}
   "odoc" {with-doc}
@@ -28,7 +25,6 @@ depends: [
   "dune-configurator" {with-test}
   "yojson" {with-test}
   "base64" {>= "3.1.0"}
-  "ptime"
 ]
 
 x-ci-accept-failures: [

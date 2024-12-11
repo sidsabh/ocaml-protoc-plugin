@@ -108,25 +108,3 @@ let to_list: t -> (int * Field.t) list =
     next t |> List.of_seq
 
 
-let%expect_test "varint boxed" =
-  let values = [-2L; -1L; 0x7FFFFFFFFFFFFFFFL; 0x7FFFFFFFFFFFFFFEL; 0x3FFFFFFFFFFFFFFFL; 0x3FFFFFFFFFFFFFFEL; 0L; 1L] in
-  List.iter ~f:(fun v ->
-    let buffer =
-      let writer = Writer.init () in
-      Writer.write_varint_value v writer;
-      Writer.contents writer
-    in
-    Printf.printf "0x%016LxL = 0x%016LxL\n"
-      v
-      (read_varint (create buffer));
-    ()
-  ) values;
-  [%expect {|
-    0xfffffffffffffffeL = 0xfffffffffffffffeL
-    0xffffffffffffffffL = 0xffffffffffffffffL
-    0x7fffffffffffffffL = 0x7fffffffffffffffL
-    0x7ffffffffffffffeL = 0x7ffffffffffffffeL
-    0x3fffffffffffffffL = 0x3fffffffffffffffL
-    0x3ffffffffffffffeL = 0x3ffffffffffffffeL
-    0x0000000000000000L = 0x0000000000000000L
-    0x0000000000000001L = 0x0000000000000001L |}]

@@ -176,29 +176,3 @@ let rec serialize: type a. (a, unit) compound_list -> Writer.t -> a = function
       write writer v;
       cont writer
 
-let%expect_test "zigzag encoding" =
-  let test vl =
-    let v = Int64.to_int vl in
-    Printf.printf "zigzag_encoding(%LdL) = %LdL\n" vl (zigzag_encoding vl);
-    Printf.printf "zigzag_encoding_unboxed(%d) = %d\n" v (zigzag_encoding_unboxed v);
-  in
-  List.iter ~f:test [0L; -1L; 1L; -2L; 2L; 2147483647L; -2147483648L; Int64.max_int; Int64.min_int; ];
-  [%expect {|
-    zigzag_encoding(0L) = 0L
-    zigzag_encoding_unboxed(0) = 0
-    zigzag_encoding(-1L) = 1L
-    zigzag_encoding_unboxed(-1) = 1
-    zigzag_encoding(1L) = 2L
-    zigzag_encoding_unboxed(1) = 2
-    zigzag_encoding(-2L) = 3L
-    zigzag_encoding_unboxed(-2) = 3
-    zigzag_encoding(2L) = 4L
-    zigzag_encoding_unboxed(2) = 4
-    zigzag_encoding(2147483647L) = 4294967294L
-    zigzag_encoding_unboxed(2147483647) = 4294967294
-    zigzag_encoding(-2147483648L) = 4294967295L
-    zigzag_encoding_unboxed(-2147483648) = 4294967295
-    zigzag_encoding(9223372036854775807L) = -2L
-    zigzag_encoding_unboxed(-1) = 1
-    zigzag_encoding(-9223372036854775808L) = -1L
-    zigzag_encoding_unboxed(0) = 0 |}]

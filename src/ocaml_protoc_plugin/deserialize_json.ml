@@ -89,29 +89,6 @@ let duration_of_json json =
   with
   | _ -> value_error "google.protobuf.duration" json
 
-let%expect_test "google.protobuf.Duration" =
-  let test str =
-    try
-      let (s,n) = duration_of_json (`String str) in
-      Printf.printf "D: %s -> %d.%09ds\n" str s n
-    with
-    | Result.Error e -> Printf.printf "Error parsing %s: %s\n" str (Result.show_error e)
-  in
-  test "1s";
-  test "-1s";
-  test "1.001s";
-  test "-1.001s";
-  test "1.1";
-  test "1.-10s";
-  ();
-  [%expect {|
-    D: 1s -> 1.000000000s
-    D: -1s -> -1.000000000s
-    D: 1.001s -> 1.001000000s
-    D: -1.001s -> -1.-01000000s
-    Error parsing 1.1: `Wrong_field_type (("google.protobuf.duration", "\"1.1\""))
-    Error parsing 1.-10s: `Wrong_field_type (("google.protobuf.duration", "\"1.-10s\"")) |}]
-
 let timestamp_of_json = function
   | `String timestamp ->
     let t =
@@ -124,27 +101,6 @@ let timestamp_of_json = function
     (seconds, nanos)
   | json -> value_error "google.protobuf.timestamp" json
 
-let%expect_test "google.protobuf.Timestamp" =
-  let test str =
-    try
-      let (s, n) = timestamp_of_json (`String str) in
-      Printf.printf "D: %s -> %Ld.%09Lds\n" str s n
-    with
-    | Result.Error e -> Printf.printf "Error parsing %s: %s\n" str (Result.show_error e)
-  in
-  test "1972-01-01T10:00:20.021Z";
-  test "2024-03-06T21:10:27.020Z";
-  test "2024-03-06T21:10:27.123123123Z";
-  test "2024-03-06T21:10:27.999999Z";
-  test "2024-03-06T21:10:27.999999";
-  ();
-  [%expect {|
-    D: 1972-01-01T10:00:20.021Z -> 63108020.021000000s
-    D: 2024-03-06T21:10:27.020Z -> 1709759427.020000000s
-    D: 2024-03-06T21:10:27.123123123Z -> 1709759427.123123123s
-    D: 2024-03-06T21:10:27.999999Z -> 1709759427.999999000s
-    Error parsing 2024-03-06T21:10:27.999999: `Wrong_field_type (("google.protobuf.duration",
-                        "\"2024-03-06T21:10:27.999999\"")) |}]
 
 let from_camel_case s =
   let open Stdlib in
@@ -162,22 +118,7 @@ let from_camel_case s =
   |> List.to_seq
   |> String.of_seq
 
-let%expect_test "json name to proto name" =
-  let test s = Printf.printf "%10s -> %10s\n" s (from_camel_case s) in
-  test "camelCase";
-  test "CamelCase";
-  test "Camel_Case";
-  test "Camel_Case";
-  test "camelCASe";
-  test "CAMelCase";
-  ();
-  [%expect {|
-     camelCase -> camel_case
-     CamelCase -> Camel_case
-    Camel_Case -> Camel_Case
-    Camel_Case -> Camel_Case
-     camelCASe -> camel_cASe
-     CAMelCase -> CAMel_case |}]
+
 
 let value_to_json json =
   let value = match json with

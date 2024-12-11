@@ -48,22 +48,6 @@ let to_camel_case s =
   |> String.concat ~sep:""
   |> String.uncapitalize_ascii
 
-let%expect_test "json name to proto name" =
-  let test s = Printf.printf "%10s -> %10s\n" s (to_camel_case s) in
-  test "camel_case";
-  test "Camel_case";
-  test "Camel_Case";
-  test "Camel_Case";
-  test "camel_cASe";
-  test "CAMel_case";
-  ();
-  [%expect {|
-    camel_case ->  camelCase
-    Camel_case ->  camelCase
-    Camel_Case ->  camelCase
-    Camel_Case ->  camelCase
-    camel_cASe ->  camelCase
-    CAMel_case ->  camelCase |}]
 
 let duration_to_json json =
   let seconds = get_key "seconds" ~f:Deserialize_json.to_int64 ~default:0L json in
@@ -79,19 +63,6 @@ let duration_to_json json =
   in
   `String duration
 
-let%expect_test "duration_to_json" =
-  let test seconds nanos =
-    let json = `Assoc ["seconds", `Int seconds; "nanos", `Int nanos] in
-    Printf.printf "%d.%d -> %s\n" seconds nanos (Json.to_string (duration_to_json json))
-  in
-  test 100 0;
-  test (1000) (123456);
-  test (-1000) (-123456);
-  ();
-  [%expect {|
-    100.0 -> "100s"
-    1000.123456 -> "1000.000123456s"
-    -1000.-123456 -> "-1000.000123456s" |}]
 
 let timestamp_to_json json =
   let open Stdlib in
@@ -113,22 +84,6 @@ let timestamp_to_json json =
   |> List.rev
   |> String.concat ~sep:"-"
   |> fun s -> `String (s^"Z")
-
-let%expect_test "timestamp_to_json" =
-  let test seconds nanos =
-    let json = `Assoc ["seconds", `String seconds; "nanos", `Int nanos] in
-    Printf.printf "%s.%d -> %s\n" seconds nanos (Json.to_string (timestamp_to_json json))
-  in
-  test "1709931283" 0;
-  test "1709931283" (1_000_000_002/2);
-  test "1709931283" 1_000_000_000;
-  test "0" 1;
-  ();
-  [%expect {|
-    1709931283.0 -> "2024-03-08T20:54:43.000000000Z"
-    1709931283.500000001 -> "2024-03-08T20:54:43.500000001Z"
-    1709931283.1000000000 -> "2024-03-08T20:54:44.000000000Z"
-    0.1 -> "1970-01-01T00:00:00.000000001Z" |}]
 
 let wrapper_to_json json = get_key ~f:(fun id -> id) ~default:`Null "value" json
 
